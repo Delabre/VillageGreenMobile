@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<link rel="stylesheet" href="jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" href="style.css">
+	<script src="jquery.js"></script>
+	<script src="jquery.mobile-1.4.5.js"></script>
+
+</head>
+<body>
+<!-- ////////////////////// PAGE 1 ////////////////////// -->
+	<div data-role="page" id="page1">
+
+		<header data-role="header" align="center">
+			<img src="logo.png" />
+			<input type="search" id="txt1" value="" placeholder="Entrez le produit">
+		</header>
+
+		<div role="main" class="ui-content">
+			
+			<div data-iscroll>
+		 		<ul data-role="listview" id="listProduit" class="ui-listview">
+
+		 		</ul>
+		 	</div>
+		</div>
+
+		<footer data-role="footer" data-position="fixed">
+			<h4>Catalogue</h4>
+		</footer>
+	</div>	
+<!-- ////////////////////// PAGE 2 ////////////////////// -->
+	<div data-role="page" id="page2">
+
+		<header data-role="header" align="center">
+			<img src="logo.png" />
+			<a href="#page1" data-icon="back" data-role="button">Retour</a>
+		</header>
+
+		<div role="main" class="ui-content" align="center">			
+			<div data-iscroll id="produit">
+
+		 	</div>
+		</div>
+
+		<footer data-role="footer" data-position="fixed">
+			<h4>Catalogue</h4>
+		</footer>
+	</div>
+</body>
+</html>
+
+<script>
+	$(document).ready(
+		function() 
+		{
+			$("#txt1").on("input", 
+				function()
+				{
+					var mot = encodeURI($("#txt1").val());
+					var donnees = "query=" + mot;
+					var apiURL = "http://localhost/villageGreenMobile/liste.php";
+					$.ajax({
+			 			url: apiURL,
+			 			data: donnees,
+			 			success: 
+			 			function (resultat) 
+			 			{
+			 				console.log(resultat);
+			 				AfficheResult(resultat);
+			 			},
+			 			error: 
+			 			function (request,error) 
+			 			{
+			 				alert('Une erreur est survenue, vous devez saisir un texte');
+			 			}
+			 		});
+				});		
+		});
+
+	function AfficheResult(data)
+	{
+		$('#listProduit').empty();
+
+		for (var i=0; i< data.length; i++) 
+		{
+			var ligne = data[i];
+			codeHTML = '<li>';
+			codeHTML += '<a data-id="' + ligne.Id_Produit + '">';
+			if (ligne.Photo_Produit != null) 
+			{
+				codeHTML += '<img src="' + ligne.Photo_Produit + '" />';
+			}
+			else
+			{
+				codeHTML += '<img src="vg.png" />';
+			}
+			codeHTML += '<h3>' + ligne.Libelle_Produit + '</h3>';
+			codeHTML += '<p>' + ligne.Nom_Sous_Categories + '</p>';
+			codeHTML += '</a>';
+			codeHTML += '</li>';
+			$('#listProduit').append(codeHTML);
+		}
+
+		$('#listProduit').listview('refresh');		
+	}
+
+	$(document).on('vclick', '#listProduit a', 
+				function()
+				{
+					 idProd = $(this).attr('data-id');
+					 console.log(idProd);
+					 $.mobile.changePage( "#page2", { transition: "slide", changeHash: false });					 
+				});
+			$(document).on('pagebeforeshow', '#page2', 
+			 	function()
+			 	{
+			 		$.get("http://localhost/villageGreenMobile/produits.php?query=" + idProd ,
+					function (data) 
+					{
+						$('#produit').html('');
+						console.log(data);
+						$('#produit').html('<h1>' + data[0].Libelle_Produit + '</h1>');
+						$('#produit').append('<h3>' + data[0].Nom_Sous_Categories + '</h3>');
+						if (data[0].Photo_Produit != null) 
+						{
+							$('#produit').append('<img src="'+ data[0].Photo_Produit +'" />');	
+						}
+						else
+						{
+							$('#produit').append('<img src="vg.png" />');
+						}
+						$('#produit').append('<p class="resum">' + data[0].Description_Produit + '</p>');
+						$('#produit').append('<p class="resum">' + data[0].Prix_HT_Produit + ' €</p>');
+					})			 		
+			 	}); 			
+</script>

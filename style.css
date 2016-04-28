@@ -1,0 +1,41 @@
+.ui-page .ui-header 
+{
+    background: #4aaf67;
+}
+
+.ui-page .ui-footer
+{
+	background: #4aaf67;
+} 
+
+footer h4
+{
+	color: white;
+	text-shadow: none;
+}
+
+.ui-content #listProduit img
+{
+	position:absolute;
+    top:0;
+    bottom:0;
+    margin:auto;
+    border-radius: 80px;
+}
+
+#listProduit a
+{
+	background: white;
+}
+
+#listProduit a:hover
+{
+	background: #4aaf67;
+	text-shadow: none;
+}
+
+.ui-content #produit img
+{
+	border: 5px solid #4aaf67;
+	border-radius: 300px;
+}
